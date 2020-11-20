@@ -27,5 +27,5 @@ Pod::Spec.new do |s|
     "ios/Libraries/libssl.a",
     "ios/Libraries/libz.a"
 
-  s.dependency "React"
+  s.dependency "React-Core"
 end
