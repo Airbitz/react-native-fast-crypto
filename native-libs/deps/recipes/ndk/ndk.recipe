@@ -1,16 +1,18 @@
 # This recipe contains the setup tasks for unpacking and installing the NDK
 inherit common
 
-version="r15c"
+version="r20b"
+linux_checksum="d903fdf077039ad9331fb6c3bee78aa46d45527b"
+darwin_checksum="b51290ab69cb89de1f0ba108702277bc333b38be"
 
 # Select the correct NDK version for the host system:
 case $(uname -sm) in
 "Linux x86_64")
     system=linux-x86_64
-    source="https://dl.google.com/android/repository/android-ndk-$version-$system.zip#0600157c4ddf50ec15b8a037cfc474143f718fd0" ;;
+    source="https://dl.google.com/android/repository/android-ndk-$version-$system.zip#$linux_checksum" ;;
 "Darwin x86_64")
     system=darwin-x86_64
-    source="https://dl.google.com/android/repository/android-ndk-$version-$system.zip#ea4b5d76475db84745aa8828000d009625fc1f98" ;;
+    source="https://dl.google.com/android/repository/android-ndk-$version-$system.zip#$darwin_checksum" ;;
 *)
     echo "Unknown host platform!"
     exit 1;;
@@ -29,22 +31,22 @@ task unzip-ndk download
 setup() {
     echo Unpacking toolchain...
     cd android-ndk-$version
-    python build/tools/make_standalone_toolchain.py --verbose --arch $1 --api 21 --stl libc++ --force --install-dir $work_dir/$1
+    python build/tools/make_standalone_toolchain.py --verbose --arch $1 --api $2 --stl libc++ --force --install-dir $work_dir/$1
 
     echo Patching headers...
     cat $recipe_dir/langinfo.h >> $work_dir/$1/sysroot/usr/local/include/langinfo.h
 }
 setup_arm() {
-    setup arm
+    setup arm 16
 }
 setup_arm64() {
-    setup arm64
+    setup arm64 21
 }
 setup_x86() {
-    setup x86
+    setup x86 16
 }
 setup_x86_64() {
-    setup x86_64
+    setup x86_64 21
 }
 task setup-arm unzip-ndk
 task setup-arm64 unzip-ndk
